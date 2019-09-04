@@ -77,6 +77,7 @@ public class RoomCommand implements Command {
 
                     if(success) {
                         client.println("成功加入聊天室 " + roomName);
+                        client.println(client.getRoom().intel());
                         client.getRoom().listOnlineClients(client);
                     } else {
                         client.println("指定聊天室不存在或是人数已满");

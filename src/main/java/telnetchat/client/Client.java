@@ -45,6 +45,7 @@ public class Client implements Runnable {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             RoomRegistry.LOBBY.addClient(this);
 
+            systemMessage("请使用'/register username password'命令进行注册");
             systemMessage("请使用'/login username password'命令进行登录");
 
             String message;

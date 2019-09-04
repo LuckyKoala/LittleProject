@@ -76,10 +76,10 @@ public class Room {
     }
 
     public String intel() {
-        return "=================" +
-                "房间信息" +
-                "名称: " + name +
+        return "=================\n" +
+                "[房间信息]\n" +
+                "名称: " + name + "\n" +
                 String.format("人数: %d/%d", clientSet.size(), limit) +
-                "=================";
+                "\n=================";
     }
 }
