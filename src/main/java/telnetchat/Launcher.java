@@ -3,6 +3,7 @@ package telnetchat;
 import telnetchat.client.Client;
 import telnetchat.client.UserRegistry;
 import telnetchat.room.RoomRegistry;
+import telnetchat.util.HashUtils;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -24,9 +25,9 @@ public class Launcher {
 
     static {
         //内置管理员及用户
-        UserRegistry.getInstance().register("admin", "adminpass", true);
-        UserRegistry.getInstance().register("john", "johnpass");
-        UserRegistry.getInstance().register("kentucky", "kentuckypass");
+        UserRegistry.getInstance().register("admin", HashUtils.md5("adminpass"), true);
+        UserRegistry.getInstance().register("john", HashUtils.md5("johnpass"));
+        UserRegistry.getInstance().register("kentucky", HashUtils.md5("kentuckypass"));
         //内置房间
         RoomRegistry.getInstance().create("BagEnd", 1);
         RoomRegistry.getInstance().create("Tech", 5);

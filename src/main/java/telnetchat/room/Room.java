@@ -60,6 +60,7 @@ public class Room {
     }
 
     public void listOnlineClients(Client sender) {
+        sender.systemMessage("[当前聊天室的在线用户列表]");
         for (Client client : sender.getRoom().getClientSet()) {
             sender.println("\t" + client.getUser().getName());
         }
