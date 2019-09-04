@@ -9,16 +9,18 @@ public class HelpCommand implements Command {
     };
 
     private static final String[] HELP_MESSAGES = new String[]{
-            "[Command help]",
-            "/? 查看命令帮助",
-            "/i 查看当前信息",
-            "/m username message... 私信",
-            "/register username password 新用户注册",
-            "/login username password 用户登录",
-            "/logout 用户注销",
-            "/create roomname limit 创建聊天室",
-            "/join roomname 加入聊天室",
-            "/leave 离开聊天室"
+            "[帮助信息]",
+            "\t/? 查看命令帮助",
+            "\t/i 查看当前信息",
+            "\t/m username message... 私信",
+            "\t/register username password 新用户注册",
+            "\t/login username password 用户登录",
+            "\t/logout 用户注销",
+            "\t/create roomname limit 创建聊天室",
+            "\t/remove roomname 移除聊天室",
+            "\t/join roomname 加入聊天室",
+            "\t/list 列出当前聊天室的在线人员",
+            "\t/leave 离开聊天室"
     };
 
     @Override
@@ -34,7 +36,7 @@ public class HelpCommand implements Command {
     public boolean processInput(Client client, String label, String[] args) {
         if(canHandle(label)) {
             for (String message : HELP_MESSAGES) {
-                client.println(message);
+                client.systemMessage(message);
             }
 
             return true;

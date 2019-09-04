@@ -1,10 +1,13 @@
 package telnetchat.client;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class UserRegistry {
     private static Map<String, User> userMap = new HashMap<>(16);
+    private static Set<String> userInUseSet = new HashSet<>(16);
     public static final User GUEST = new User("Guest", "Guest", false);
 
     private static volatile UserRegistry instance;
@@ -26,20 +29,45 @@ public class UserRegistry {
     }
 
     public boolean register(String userName, String passwordHash) {
+        return register(userName, passwordHash, false);
+    }
+
+    public boolean register(String userName, String passwordHash, boolean isAdmin) {
         if(userMap.containsKey(userName)) {
             return false;
         }
 
-        userMap.put(userName, new User(userName, passwordHash, false));
+        userMap.put(userName, new User(userName, passwordHash, isAdmin));
         return true;
     }
 
-    public User login(String username, String passwordHash) {
+    public void login(Client client, String username, String passwordHash) {
         User user = userMap.getOrDefault(username, GUEST);
         if(user.getPasswordHash().equals(passwordHash)) {
-            return user;
+            if(userInUseSet.contains(username)) {
+                client.systemMessage("该用户已登录");
+            } else {
+                userInUseSet.add(username);
+                client.setUser(user);
+                client.systemMessage("登录成功");
+            }
         } else {
-            return GUEST;
+            client.systemMessage("用户名密码错误");
         }
+    }
+
+    public void logout(Client client) {
+        if(UserRegistry.GUEST != client.getUser()) {
+            String userName = client.getUser().getName();
+            client.setUser(UserRegistry.GUEST);
+            userInUseSet.remove(userName);
+            client.systemMessage("已注销");
+        } else {
+            client.systemMessage("未登录，无需注销");
+        }
+    }
+
+    public boolean userInUse(String userName) {
+        return userInUseSet.contains(userName);
     }
 }

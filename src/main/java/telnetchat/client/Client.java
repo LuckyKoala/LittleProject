@@ -2,7 +2,6 @@ package telnetchat.client;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import telnetchat.command.CommandRegistry;
 import telnetchat.room.Room;
 import telnetchat.room.RoomRegistry;
@@ -49,7 +48,7 @@ public class Client implements Runnable {
             systemMessage("请使用'/login username password'命令进行登录");
 
             String message;
-            while(valid && (message = in.readLine()) != null) {
+            while(valid && (message = readLine()) != null) {
                 if(message.length() > 1 && message.charAt(0) == '/') {
                     //Command case:
                     //  "/cmd param1 param2 ..."
@@ -91,6 +90,8 @@ public class Client implements Runnable {
     }
 
     public String readLine() throws IOException {
+        out.print("--> ");
+        out.flush();
         return in.readLine();
     }
 

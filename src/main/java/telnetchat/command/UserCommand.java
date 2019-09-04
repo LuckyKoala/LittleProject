@@ -1,7 +1,6 @@
 package telnetchat.command;
 
 import telnetchat.client.Client;
-import telnetchat.client.User;
 import telnetchat.client.UserRegistry;
 import telnetchat.util.HashUtils;
 
@@ -46,25 +45,12 @@ public class UserCommand implements Command {
                 } else {
                     String username = args[0];
                     String passwordHash = HashUtils.md5(args[1]);
-                    User user = UserRegistry.getInstance().login(username, passwordHash);
-
-                    if(UserRegistry.GUEST != user) {
-                        client.setUser(user);
-                        client.println("成功登入用户 " + username);
-                        return true;
-                    } else {
-                        client.println("用户名密码不对应，请检查后重试");
-                    }
+                    UserRegistry.getInstance().login(client, username, passwordHash);
                 }
                 break;
 
             case "logout":
-                if(UserRegistry.GUEST != client.getUser()) {
-                    client.setUser(UserRegistry.GUEST);
-                    client.println("已注销");
-                } else {
-                    client.println("当前已处于注销状态");
-                }
+                UserRegistry.getInstance().logout(client);
                 break;
 
             default:

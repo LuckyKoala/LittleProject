@@ -6,7 +6,9 @@ import telnetchat.room.RoomRegistry;
 public class RoomCommand implements Command {
     public static final String[] ROOM_LABELS = new String[]{
             "create",
+            "remove",
             "join",
+            "list",
             "leave"
     };
 
@@ -23,22 +25,47 @@ public class RoomCommand implements Command {
     @Override
     public boolean processInput(Client client, String label, String[] args) {
         switch (label) {
-            //TODO 管理员 权限相关 创建/移除聊天室
             case "create":
-                if(args.length < 2) {
-                    client.println("参数不足，/create roomname limit");
-                } else {
-                    String roomName = args[0];
-                    int limit = Integer.parseInt(args[1]);
-                    boolean success = RoomRegistry.getInstance()
-                            .create(roomName, limit);
-
-                    if(success) {
-                        client.println("成功创建聊天室 " + roomName);
+                if (client.getUser().isAdmin()) {
+                    if(args.length < 2) {
+                        client.println("参数不足，/create roomname limit");
                     } else {
-                        client.println("房间名已存在");
+                        String roomName = args[0];
+                        int limit = Integer.parseInt(args[1]);
+                        boolean success = RoomRegistry.getInstance()
+                                .create(roomName, limit);
+
+                        if(success) {
+                            client.println("成功创建聊天室 " + roomName);
+                        } else {
+                            client.println("房间名已存在");
+                        }
                     }
+                } else {
+                    client.systemMessage("只有管理员才能执行本操作");
                 }
+
+                break;
+
+            case "remove":
+                if(client.getUser().isAdmin()) {
+                    if(args.length < 1) {
+                        client.println("参数不足，/remove roomname");
+                    } else {
+                        String roomName = args[0];
+                        boolean success = RoomRegistry.getInstance()
+                                .remove(roomName);
+
+                        if(success) {
+                            client.println("成功移除聊天室 " + roomName);
+                        } else {
+                            client.println("房间名不存在");
+                        }
+                    }
+                } else {
+                    client.systemMessage("只有管理员才能执行本操作");
+                }
+
                 break;
 
             case "join":
@@ -54,6 +81,10 @@ public class RoomCommand implements Command {
                         client.println("指定聊天室不存在或是人数已满");
                     }
                 }
+                break;
+
+            case "list":
+                client.getRoom().listOnlineClients(client);
                 break;
 
             case "leave":

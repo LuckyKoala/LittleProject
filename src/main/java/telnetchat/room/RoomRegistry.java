@@ -1,6 +1,7 @@
 package telnetchat.room;
 
 import telnetchat.client.Client;
+import telnetchat.client.UserRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,10 @@ public class RoomRegistry {
     }
 
     public boolean remove(String roomName) {
+        if(LOBBY.getName().equals(roomName)) {
+            return false;
+        }
+
         Room room = roomMap.remove(roomName);
         if(room != null) {
             room.invalidate();
@@ -51,6 +56,7 @@ public class RoomRegistry {
         if(room != null) {
             boolean success = room.addClient(client);
             if(success) {
+                client.getRoom().delClient(client);
                 client.setRoom(room);
             }
 
@@ -65,7 +71,10 @@ public class RoomRegistry {
         if(success) {
             if (client.getRoom() != LOBBY) {
                 client.setRoom(LOBBY);
+                LOBBY.addClient(client);
             } else {
+                UserRegistry.getInstance().logout(client);
+                LOBBY.delClient(client);
                 client.close();
             }
         }

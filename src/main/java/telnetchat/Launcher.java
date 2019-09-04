@@ -1,6 +1,8 @@
 package telnetchat;
 
 import telnetchat.client.Client;
+import telnetchat.client.UserRegistry;
+import telnetchat.room.RoomRegistry;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -19,6 +21,17 @@ import java.util.concurrent.Executors;
  */
 public class Launcher {
     private static ExecutorService executor = Executors.newFixedThreadPool(5);
+
+    static {
+        //内置管理员及用户
+        UserRegistry.getInstance().register("admin", "adminpass", true);
+        UserRegistry.getInstance().register("john", "johnpass");
+        UserRegistry.getInstance().register("kentucky", "kentuckypass");
+        //内置房间
+        RoomRegistry.getInstance().create("BagEnd", 1);
+        RoomRegistry.getInstance().create("Tech", 5);
+        RoomRegistry.getInstance().create("Life", 10);
+    }
 
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(23);

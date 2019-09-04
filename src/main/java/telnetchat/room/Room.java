@@ -13,6 +13,7 @@ public class Room {
     @Getter
     private final String name;
     private int limit;
+    @Getter
     private Set<Client> clientSet;
 
     public Room(String name, int limit) {
@@ -46,17 +47,30 @@ public class Room {
     }
 
     public void msg(Client sender, String userName, String message) {
-        //FIXME 应检查私信对象是否在线 是否存在
-        String formattedMessage = String.format("[%s -> %s]", sender.getUser().getName(), userName) + message;
-        sender.println("正在发送私信# " + formattedMessage);
-        clientSet.stream()
-                .filter(client -> client.getUser().getName().equals(userName))
-                .findFirst()
-                .ifPresent(client -> client.println(formattedMessage));
+        if(UserRegistry.getInstance().userInUse(userName)) {
+            String formattedMessage = String.format("[%s -> %s]", sender.getUser().getName(), userName) + message;
+            sender.systemMessage("正在发送私信# " + formattedMessage);
+            clientSet.stream()
+                    .filter(client -> client.getUser().getName().equals(userName))
+                    .findFirst()
+                    .ifPresent(client -> client.println(formattedMessage));
+        } else {
+            sender.systemMessage("该用户不在线");
+        }
     }
 
-    public void invalidate() {
-        clientSet.forEach(this::delClient);
+    public void listOnlineClients(Client sender) {
+        for (Client client : sender.getRoom().getClientSet()) {
+            sender.println("\t" + client.getUser().getName());
+        }
+    }
+
+    void invalidate() {
+        for (Client client : clientSet) {
+            client.setRoom(RoomRegistry.LOBBY);
+            delClient(client);
+            client.systemMessage("聊天室已关闭，已将你移动到大厅");
+        }
         this.valid = false;
     }
 
